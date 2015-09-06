@@ -1,0 +1,29 @@
+id: email_teachings3
+label: Email teachings
+migration_groups:
+  - Teachings
+
+source:
+  plugin: csv
+  path: '/home/siewyit/ahs_teachings.csv'
+  identifiers:
+    - Id
+  csvColumns:
+    0: Id
+    1: Title
+    2: Article
+    3: Date
+  header_row_count: 1
+  keys:
+    - Id
+
+process:
+  type:
+    plugin: default_value
+    default_value: email_teachings
+  title: Title
+  body: Article
+  field_date: Date
+destination:
+  plugin: entity:node
+

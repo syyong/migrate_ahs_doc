@@ -1,0 +1,27 @@
+id: user_names
+label: Users
+migration_groups:
+  - US_Census
+
+source:
+  plugin: csv
+  path: '/home/siewyit/ahs_users.csv'
+  identifiers:
+    - Id
+  csvColumns:
+    0: Id
+    1: Name 
+  header_row_count: 1
+  keys:
+    - Id
+
+process:
+  name: User names
+  vid:
+    -
+      plugin: default_value
+      default_value: user_names
+
+destination:
+  plugin: entity:taxonomy_term
+

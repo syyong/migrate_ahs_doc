@@ -1,0 +1,31 @@
+id: email_teachings4
+label: Email teachings
+migration_groups:
+  - Teachings
+
+source:
+  plugin: csv
+  path: '/home/siewyit/web_ahs_sep2015/test_res_manager.csv'
+  identifiers:
+    - id
+  csvColumns:
+    0: id
+    1: title
+    5: dt_created 
+    12: abstract
+    13: article
+  header_row_count: 1
+  keys:
+    - id
+
+process:
+  type:
+    plugin: default_value
+    default_value: email_teaching
+  title: title
+  'body/value': article
+  'body/summary': abstract
+  field_date_email: dt_created 
+destination:
+  plugin: entity:node
+
