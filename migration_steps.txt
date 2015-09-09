@@ -1,0 +1,121 @@
+1. input file: res_manager.csv [1]
+* need instructions on how to prepare the csv file [5]*
+2. configuration files:
+  i. cd drupal/modules
+  ii. mkdir -p config/install
+  iii. create a migration info file. For example, migrate_ahs_teaching.info.yml [2].
+  iv. create a migration group setting file. For example, migrate.migration_group.Teachings.yml [3].
+      -- you only need this once. For the rest of the migrations, if they belong to the same group, you can omit this.
+  v. cd config/install
+  vi. create a migration yaml(yml) file. For example, migrate.migration.email_teachings.yml [4].
+3. run the migration [6]
+  i. the drupal directory
+  ii. drush en <module name>. For example. drush en migrate_ahs_teaching -y
+  iii. drush mi <migration id>. For example, drush mi email_teachings. It should tell you how many items have been processed.
+  iv. Check the content if they have been loaded at the drupal site.
+4. You can check the migration process by typing: drush ms <migration id>
+5. If you need to update the migration yaml file after you have enabled the module, you can do it at the drupal site:
+  i. navigate to the Single import page:
+<url to the drupal site>/admin/config/development/configuration/single/export
+  ii. select export and look for your configuration file. Pick 'migration' for Configuration type and pick the name of your migration. In this example, it's Email teachings.
+  iii. copy the configuration and navigate to 
+<url to the drupal site>/admin/config/development/configuration/single/import
+  iv. Select the migration configuration type again and paste the configuration into the box.
+  v. Click import at the bottom of the page to save it.
+
+[1] res_manager.csv
+The drupal migration tool assumes your input file is in this format:
+"id","title","dt_itemdate","dt_available_from","dt_available_to","dt_created","dt_modified","author","modified_by","readcount","category_id","event","abstract","article","created_by","dt_itemdate_bak"
+"66","We can use words about the heart to l...",NULL,"2003-06-27 00:00:00","2020-01-01 00:00:00","2003-06-27 11:10:45","2004-02-04 00:33:31","Shenpen Hookham","marlene","87","20",,"We can use words about the heart to link into an inner intuitive sense of natural responsiveness, that we could awaken and rejoice in. We are trying to discover the experience that leads us to contrast head and heart and to really experience that, so that we can take our understanding deeper.","<P>A student writes:</P>
+<P class=EmailQuestion>""I didn't find it meaningful to reflect on acknowledging, aligning with, honouring and celebrating your heart. I persevered with it before and after the meditation in the hope it was having an effect, but ultimately I wasn't able to connect with it.""</P>
+<P>Shenpen replies:</P>"
+-- separated by comma, and each item is in a double quote.
+-- There is a header in this file, which is why you specify header_row_count = 1 in your migration yml file. Please refer to the explanation about the yml file below.
+
+[2] migrate_ahs_teaching.info.yml
+-- this file defines the module and here is the content:
+name: AHS Migration email teachings
+description: Custom migration module for migrating data from old AHs website.
+package: Migrations
+type: module
+core: 8.x
+dependencies:
+  - migrate
+  - migrate_plus
+  - migrate_source_csv
+
+[3] migrate.migration_group.Teachings.yml
+-- this file defines the migration group of the module:
+# The machine name of the group, by which it is referenced in individual
+# migrations.
+id: Teachings
+
+# A human-friendly label of the group, displayed in the UI.
+label: Email teachings 
+
+# More information about the group.
+description: A few simple test imports, to demonstrate how to implement migrations.
+
+# Short description of the type of source, e.g. "Drupal 6" or "WordPress".
+source_type: Custom tables
+
+# Here we add any default configuration settings to be shared among all
+# migrations in the group.
+shared_configuration:
+  source:
+    key: default
+
+[4] migrate.migration.email_teachings.yml
+-- this is where all the configurations stored. Here is more information about each components: https://api.drupal.org/api/drupal/core!modules!migrate!migrate.api.php/group/
+id: email_teachings
+migration_tags: null
+label: 'Email teachings'
+source:
+  plugin: csv
+  path: /home/siewyit/web_ahs_sep2015/test_res_manager.csv
+  identifiers:
+    - id
+  csvColumns:
+    0: id
+    1: title
+    5: dt_created
+    12: abstract
+    13: article
+  header_row_count: 1
+  keys:
+    - id
+process:
+  type:
+    plugin: default_value
+    default_value: email_teaching
+  title: title
+  body/value: article
+  body/summary: abstract
+  body/format:
+    plugin: default_value
+    default_value: basic_html
+  field_date_email: dt_created
+  uid:
+    plugin: default_value
+    default_value: 2
+destination:
+  plugin: 'entity:node'
+template: null
+migration_dependencies: {  }
+migration_group: null
+
+[5] processing .csv file:
+1. remove time from the file. Open the file using Vi and then :%s/ [0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}//g
+2. add the header to the file if it hasn't got one:
+"id","title","dt_itemdate","dt_available_from","dt_available_to","dt_created","dt_modified","author","modified_by","readcount","category_id","event","abstract","article","created_by","dt_itemdate_bak"
+3. remove summary from the body
+4. replace <P class=EmailQuestion> with something else.
+
+[6] Example drush commands and messages:
+siewyit@feisty /var/www/html/drupal8/modules $ drush en migrate_ahs_09092015 -y
+The following extensions will be enabled: migrate_ahs_09092015
+Do you really want to continue? (y/n): y
+migrate_ahs_09092015 was enabled successfully.                                                                                     [ok]
+siewyit@feisty /var/www/html/drupal8/modules $ drush mi email_teaching09092015
+Processed 83 items (83 created, 0 updated, 0 failed, 0 ignored) - done with 'email_teaching09092015'                               [status]
+

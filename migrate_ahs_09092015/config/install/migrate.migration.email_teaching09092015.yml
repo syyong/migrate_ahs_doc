@@ -1,0 +1,47 @@
+dependencies:
+  module:
+    - migrate_source_csv
+    - node
+
+id: email_teaching09092015
+label: Email teaching
+
+migration_group: Teachings09092015
+migration_tags: null
+source:
+  plugin: csv
+  path: /home/siewyit/web_ahs_sep2015/sep_2014.csv
+  identifiers:
+    - id
+  csvColumns:
+    0: 
+      id: Unique identifier
+    1: 
+      title: Title of the article
+    5: 
+      dt_created: Date of the email
+    12: 
+      abstract: The summary of the email teaching
+    13: 
+      article: The body of the email teaching
+  header_row_count: 1
+  keys:
+    - id
+process:
+  type:
+    plugin: default_value
+    default_value: email_teaching
+  title: title
+  body/value: article
+  body/summary: abstract
+  body/format:
+    plugin: default_value
+    default_value: basic_html
+  field_date_email: dt_created
+  uid:
+    plugin: default_value
+    default_value: 2
+destination:
+  plugin: 'entity:node'
+template: null
+migration_dependencies: {  }

@@ -1,0 +1,18 @@
+# The machine name of the group, by which it is referenced in individual
+# migrations.
+id: teachings09092015
+
+# A human-friendly label of the group, displayed in the UI.
+label: Teachings09092015 
+
+# More information about the group.
+description: for migrating teachings.
+
+# Short description of the type of source, e.g. "Drupal 6" or "WordPress".
+source_type: CSV
+
+# Here we add any default configuration settings to be shared among all
+# migrations in the group.
+shared_configuration:
+  source:
+    key: default

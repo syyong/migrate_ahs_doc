@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Clean up the configuration when uninstall the migration ahs module.
+ */
+
+use Drupal\migrate\Entity\MigrationInterface;
+
+/**
+ * hook_uninstall.
+ */
+function migrate_ahs_teaching_uninstall() {
+  db_query("DELETE FROM {config} WHERE name LIKE 'migrate.migration.email_teaching09092015%'");
+  drupal_flush_all_caches();
+}
