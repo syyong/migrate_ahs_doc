@@ -1,0 +1,3 @@
+create taxonomy terms on the website first
+drush en 'module'
+drush mi 'migrate name'
